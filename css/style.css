@@ -1,0 +1,13 @@
+body{
+    background-color: grey;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#frame{
+    width:1060px;
+    height:720px;
+    background-color: white;
+}
