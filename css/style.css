@@ -8,7 +8,7 @@ body{
 
 #frame{
     position:relative;
-    background-color: white;
+    background-color:white;
 
     width:400px;
     height:750px;
@@ -16,4 +16,13 @@ body{
 
 .absolute{
     position : absolute;
+}
+
+.flip{
+    -moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    filter: FlipH;
+    -ms-filter: "FlipH";
 }

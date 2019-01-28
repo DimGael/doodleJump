@@ -69,7 +69,7 @@ Entite.prototype.deplacerBas = function(pixel){
  * @param {pixel} posY 
  */
 var Doodler = function(posX, posY){
-    Entite.call(this, posX, posY, 50, 50)
+    Entite.call(this, posX, posY, 60, 60)
 
     this.templateId = "doodler"
 };

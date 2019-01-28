@@ -31,8 +31,16 @@ var View = {
 
         var clone = template.content.cloneNode(true).firstElementChild
 
+        if(Model.doodler.flip)
+            clone.classList.add("flip")
+        else
+            clone.classList.remove("flip")
+
         clone.style.left = doodler.getX()+"px";
         clone.style.bottom = doodler.getY()+"px";
+
+        clone.style.height = doodler.getHauteur()+"px"
+        clone.style.width = doodler.getLargeur()+"px"
 
         View.frame.append(clone);
     },
@@ -54,9 +62,12 @@ var Controller = {
     },
 
     init : function(){
-        Controller.refreshAll()
-
+         //Initialise les listeners du joueur
         Controller.initListeners()
+        Model.doodler.flip = false
+
+         //Affichage de tous les éléments de la frame
+        Controller.refreshAll()
     },
 
     initListeners : function(){
@@ -112,11 +123,13 @@ var Controller = {
 
     demarrerDeplacementGauche : function(){
         Model.doodler.gauche = true
+        Model.doodler.flip = false
         Controller.demarrerDeplacementDoodler()
     },
 
     demarrerDeplacementDroite : function(){
         Model.doodler.droite = true
+        Model.doodler.flip = true
         Controller.demarrerDeplacementDoodler()
     },
 
