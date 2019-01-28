@@ -6,6 +6,16 @@ const FRAME_SETTINGS = {
 }
 */
 
+//Constantes des paramètres du jeu
+const GAME_SETTINGS = {
+    vitesseDoodler : 6
+}
+
+window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+		                              window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+
+window.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
+
 
 var Model = {
     doodler: new Doodler(Number(FRAME_SETTINGS.width/2), 0),
@@ -33,9 +43,13 @@ var View = {
 };
 
 var Controller = {
+     //Variable qui va gérer le déplacement sur le côté du doodler
+    animationDoodlerCote_query : null,
+
 
      //Raffraichis l'intégralité de la vue
     refreshAll : function(){
+         //TODO ajouter les autres entités
         View.renderDoodler(Model.doodler)
     },
 
@@ -51,7 +65,7 @@ var Controller = {
                 case 'q':
                 case 'ArrowLeft':
                     //Si le doodler est immobile
-                    if(!Controller.animationDoodler_query)
+                    if(!Controller.animationDoodlerCote_query)
                         Controller.demarrerDeplacementGauche()
                     //Sinon si le doodler se déplace vers la droite
                     else if(Model.doodler.droite){
@@ -64,10 +78,10 @@ var Controller = {
                 case 'd':
                 case 'ArrowRight':
                     //Si le doodler saute sur place (immobile)
-                    if(!Controller.animationDoodler_query)
+                    if(!Controller.animationDoodlerCote_query)
                         Controller.demarrerDeplacementDroite()
                     //Sinon si le doodler se déplace vers la gauche
-                    else if(!Model.doodler.droite){
+                    else if(Model.doodler.gauche){
                         Controller.stopDeplacementDoodler()
                         Controller.demarrerDeplacementDroite()
                     }
@@ -84,7 +98,7 @@ var Controller = {
             switch (event.key) {
                 case 'q':
                 case 'ArrowLeft':
-                    if(!Model.doodler.droite)
+                    if(Model.doodler.gauche)
                         Controller.stopDeplacementDoodler()
                     break;
                 case 'd':
@@ -97,36 +111,37 @@ var Controller = {
     },
 
     demarrerDeplacementGauche : function(){
-        //TODO
-        Model.doodler.droite = false
+        Model.doodler.gauche = true
         Controller.demarrerDeplacementDoodler()
     },
 
     demarrerDeplacementDroite : function(){
-        //TODO
         Model.doodler.droite = true
         Controller.demarrerDeplacementDoodler()
     },
 
     stopDeplacementDoodler : function(){
-        //TODO
-        console.log("Le doodler arrete de bouger")
-        Controller.animationDoodler_query = false
+        Model.doodler.droite = false
+        Model.doodler.gauche = false
+
+        window.cancelAnimationFrame(Controller.animationDoodlerCote_query)
+        Controller.animationDoodlerCote_query = undefined
     },
 
     demarrerDeplacementDoodler : function(){
-        //TODO
-        if(Model.doodler.droite){
-            Model.doodler.deplacerDroite(10)
+        var step = function(timestamp){
+            if(Model.doodler.droite)
+                Model.doodler.deplacerDroite(GAME_SETTINGS.vitesseDoodler)
+            else if(Model.doodler.gauche)
+                Model.doodler.deplacerGauche(GAME_SETTINGS.vitesseDoodler)
+            else
+                window.cancelAnimationFrame(Controller.animationDoodlerCote_query)
             View.clearFrame()
             View.renderDoodler(Model.doodler)
+            Controller.animationDoodlerCote_query = window.requestAnimationFrame(step)
         }
-        else{
-            Model.doodler.deplacerGauche(10)
-            View.clearFrame()
-            View.renderDoodler(Model.doodler)
-        }
-        Controller.animationDoodler_query = true
+
+        Controller.animationDoodlerCote_query = window.requestAnimationFrame(step)
     },
 
     faireSauterDoodler : function(){

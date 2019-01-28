@@ -1,7 +1,7 @@
 /** Constantes */
 const FRAME_SETTINGS = {
-    width:800,
-    height:720
+    width:400,
+    height:750
 }
 
 /**
