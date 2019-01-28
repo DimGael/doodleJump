@@ -1,21 +1,19 @@
+/**
+ * Déclarée dans doodler.js
 const FRAME_SETTINGS = {
     width:800,
     height:720
 }
+*/
 
 
 var Model = {
-    doodler: {
-        posX : Number(FRAME_SETTINGS.width/2),
-        posY : 0
-    }
+    doodler: new Doodler(Number(FRAME_SETTINGS.width/2), 0),
 }
 
 var View = {
      // Récupère la frame dans laquelle les éléments sont ajoutés
-    getFrame : function(){
-      return document.getElementById("frame");
-    },
+    frame : document.getElementById("frame"),
 
      // Raffraichis l'affichage du doodler
     renderDoodler : function(doodler){
@@ -23,18 +21,22 @@ var View = {
 
         var clone = template.content.cloneNode(true).firstElementChild
 
-        clone.style.left = doodler.posX+"px";
-        clone.style.bottom = doodler.posY+"px";
+        clone.style.left = doodler.getX()+"px";
+        clone.style.bottom = doodler.getY()+"px";
 
-        View.getFrame().append(clone);
+        View.frame.append(clone);
+    },
+
+    clearFrame : function(){
+        View.frame.innerHTML = ""
     }
-}
+};
 
 var Controller = {
 
      //Raffraichis l'intégralité de la vue
     refreshAll : function(){
-      View.renderDoodler(Model.doodler)
+        View.renderDoodler(Model.doodler)
     },
 
     init : function(){
@@ -114,12 +116,16 @@ var Controller = {
 
     demarrerDeplacementDoodler : function(){
         //TODO
-        if(Model.doodler.droite)
-            console.log("Le doodler va a droite")
-        else
-            console.log("le doodler va a gauche")
-
-
+        if(Model.doodler.droite){
+            Model.doodler.deplacerDroite(10)
+            View.clearFrame()
+            View.renderDoodler(Model.doodler)
+        }
+        else{
+            Model.doodler.deplacerGauche(10)
+            View.clearFrame()
+            View.renderDoodler(Model.doodler)
+        }
         Controller.animationDoodler_query = true
     },
 

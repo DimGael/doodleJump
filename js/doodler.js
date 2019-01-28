@@ -1,3 +1,9 @@
+/** Constantes */
+const FRAME_SETTINGS = {
+    width:800,
+    height:720
+}
+
 /**
  * Classe mère qui définit un objet pouvant être représenté dans la frame.
  * A une taille, et des coordonnées
@@ -26,6 +32,36 @@ Entite.prototype.getHauteur = function(){ return this.hauteur }
 Entite.prototype.setLargeur = function(newLargeur){ this.largeur = newLargeur }
 Entite.prototype.setHauteur = function(newHauteur){ this.hauteur = newHauteur }
 
+Entite.prototype.deplacerDroite = function(pixel){
+    this.setX(this.getX() + pixel)
+
+    if(this.getX() > FRAME_SETTINGS.width - this.getLargeur())
+        this.setX(FRAME_SETTINGS.width - this.getLargeur())
+};
+
+Entite.prototype.deplacerGauche = function(pixel){
+    this.setX(this.getX() - pixel)
+    
+    if(this.getX()<0)
+        this.setX(0)
+};
+
+Entite.prototype.deplacerHaut = function(pixel){
+    this.setY(this.getY() + pixel)
+
+    if(this.getY() > FRAME_SETTINGS.height) //TODO c'est pas sur
+        this.setY(FRAME_SETTINGS.height)
+};
+
+Entite.prototype.deplacerBas = function(pixel){
+    this.setY(this.getY() - pixel)
+
+    if(this.getY() < this.getHauteur())
+        this.setY(this.getHauteur())
+};
+
+
+
 /**
  * Classe héritant de Entite.
  * Va définir le Doodler
@@ -37,6 +73,7 @@ var Doodler = function(posX, posY){
 
     this.templateId = "doodler"
 };
-Doodler.prototype = Object.create(Entite.prototype);
-
 Doodler.prototype.getTemplateId = function(){return this.templateId}
+Doodler.prototype = Object.create(Entite.prototype);
+Doodler.prototype.constructor = Doodler
+
