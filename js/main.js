@@ -40,43 +40,40 @@ var Controller = {
     init : function(){
         Controller.refreshAll()
 
-        document.addEventListener()
+        Controller.initListeners()
     },
 
-/*
-    COPIE DE SPACE INVADERS
     initListeners : function(){
-        //Controle du vaisseau principal
         document.addEventListener('keydown', (event) => {
             switch (event.key) {
                 case 'q':
                 case 'ArrowLeft':
-                    //Si le vaisseau est immobile
-                    if(!self.animationFighter_query)
-                        self.demarrerDeplacementGauche()
-                    //Sinon si le vaisseau se déplace vers la droite
-                    else if(Model.alienFighter.droite){
-                        self.stopDeplacementFighter()
-                        self.demarrerDeplacementGauche()
+                    //Si le doodler est immobile
+                    if(!Controller.animationDoodler_query)
+                        Controller.demarrerDeplacementGauche()
+                    //Sinon si le doodler se déplace vers la droite
+                    else if(Model.doodler.droite){
+                        Controller.stopDeplacementDoodler()
+                        Controller.demarrerDeplacementGauche()
                     }
-                    //Sinon le vaisseau se déplace déjà vers la gauche
+                    //Sinon le doodler se déplace déjà vers la gauche
                     break;
 
                 case 'd':
                 case 'ArrowRight':
-                    //Si le vaisseau est immobile
-                    if(!self.animationFighter_query)
-                        self.demarrerDeplacementDroite()
-                    //Sinon si le vaisseau se déplace vers la gauche
-                    else if(Model.alienFighter.gauche){
-                        self.stopDeplacementFighter()
-                        self.demarrerDeplacementDroite()
+                    //Si le doodler saute sur place (immobile)
+                    if(!Controller.animationDoodler_query)
+                        Controller.demarrerDeplacementDroite()
+                    //Sinon si le doodler se déplace vers la gauche
+                    else if(!Model.doodler.droite){
+                        Controller.stopDeplacementDoodler()
+                        Controller.demarrerDeplacementDroite()
                     }
-                    //Sinon le vaisseau se déplace déjà vers la droite
+                    //Sinon le doodler se déplace déjà vers la droite
                     break;
 
                 case ' ':
-                    self.faireTirerFighter()
+                    Controller.faireSauterDoodler()
                     break;
             }
         })
@@ -85,18 +82,51 @@ var Controller = {
             switch (event.key) {
                 case 'q':
                 case 'ArrowLeft':
-                    if(Model.alienFighter.gauche)
-                        self.stopDeplacementFighter()
+                    if(!Model.doodler.droite)
+                        Controller.stopDeplacementDoodler()
                     break;
                 case 'd':
                 case 'ArrowRight':
-                    if(Model.alienFighter.droite)
-                        self.stopDeplacementFighter()
+                    if(Model.doodler.droite)
+                        Controller.stopDeplacementDoodler()
                     break;
             }
         })
+    },
+
+    demarrerDeplacementGauche : function(){
+        //TODO
+        Model.doodler.droite = false
+        Controller.demarrerDeplacementDoodler()
+    },
+
+    demarrerDeplacementDroite : function(){
+        //TODO
+        Model.doodler.droite = true
+        Controller.demarrerDeplacementDoodler()
+    },
+
+    stopDeplacementDoodler : function(){
+        //TODO
+        console.log("Le doodler arrete de bouger")
+        Controller.animationDoodler_query = false
+    },
+
+    demarrerDeplacementDoodler : function(){
+        //TODO
+        if(Model.doodler.droite)
+            console.log("Le doodler va a droite")
+        else
+            console.log("le doodler va a gauche")
+
+
+        Controller.animationDoodler_query = true
+    },
+
+    faireSauterDoodler : function(){
+        //TODO
+        console.log("SAUT !")
     }
-    */
 }
 
 Controller.init();
