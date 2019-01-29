@@ -1,8 +1,8 @@
 /**
  * Déclarée dans doodler.js
 const FRAME_SETTINGS = {
-    width:800,
-    height:720
+    width:400,
+    height:750
 }
 */
 
@@ -18,7 +18,18 @@ window.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAni
 
 
 var Model = {
-    doodler: new Doodler(Number(FRAME_SETTINGS.width/2), 0),
+     //Si deux doodlers sont présents, c'est qu'il traverse l'écran
+    doodlers: [
+        new Doodler(Number(FRAME_SETTINGS.width/2), 0),
+        null
+    ],
+
+    getDoodlers : function(){
+        if(!Model.doodlers[1])
+            return [Model.doodlers[0]]
+        else
+            return Model.doodlers
+    },
 }
 
 var View = {
@@ -30,8 +41,8 @@ var View = {
         var template = document.querySelector("#doodler");
 
         var clone = template.content.cloneNode(true).firstElementChild
-
-        if(Model.doodler.flip)
+        
+        if(doodler.regardeADroite)
             clone.classList.add("flip")
         else
             clone.classList.remove("flip")
@@ -58,13 +69,12 @@ var Controller = {
      //Raffraichis l'intégralité de la vue
     refreshAll : function(){
          //TODO ajouter les autres entités
-        View.renderDoodler(Model.doodler)
+        Model.getDoodlers().forEach(doodler => View.renderDoodler(doodler))
     },
 
     init : function(){
          //Initialise les listeners du joueur
         Controller.initListeners()
-        Model.doodler.flip = false
 
          //Affichage de tous les éléments de la frame
         Controller.refreshAll()
@@ -79,7 +89,7 @@ var Controller = {
                     if(!Controller.animationDoodlerCote_query)
                         Controller.demarrerDeplacementGauche()
                     //Sinon si le doodler se déplace vers la droite
-                    else if(Model.doodler.droite){
+                    else if(Model.doodlers.droite){
                         Controller.stopDeplacementDoodler()
                         Controller.demarrerDeplacementGauche()
                     }
@@ -92,7 +102,7 @@ var Controller = {
                     if(!Controller.animationDoodlerCote_query)
                         Controller.demarrerDeplacementDroite()
                     //Sinon si le doodler se déplace vers la gauche
-                    else if(Model.doodler.gauche){
+                    else if(Model.doodlers.gauche){
                         Controller.stopDeplacementDoodler()
                         Controller.demarrerDeplacementDroite()
                     }
@@ -109,12 +119,12 @@ var Controller = {
             switch (event.key) {
                 case 'q':
                 case 'ArrowLeft':
-                    if(Model.doodler.gauche)
+                    if(Model.doodlers.gauche)
                         Controller.stopDeplacementDoodler()
                     break;
                 case 'd':
                 case 'ArrowRight':
-                    if(Model.doodler.droite)
+                    if(Model.doodlers.droite)
                         Controller.stopDeplacementDoodler()
                     break;
             }
@@ -122,20 +132,20 @@ var Controller = {
     },
 
     demarrerDeplacementGauche : function(){
-        Model.doodler.gauche = true
-        Model.doodler.flip = false
+        Model.doodlers.gauche = true
+        Model.getDoodlers().forEach(doodler => doodler.regarderAGauche())
         Controller.demarrerDeplacementDoodler()
     },
 
     demarrerDeplacementDroite : function(){
-        Model.doodler.droite = true
-        Model.doodler.flip = true
+        Model.doodlers.droite = true
+        Model.getDoodlers().forEach(doodler => doodler.regarderADroite())
         Controller.demarrerDeplacementDoodler()
     },
 
     stopDeplacementDoodler : function(){
-        Model.doodler.droite = false
-        Model.doodler.gauche = false
+        Model.doodlers.droite = false
+        Model.doodlers.gauche = false
 
         window.cancelAnimationFrame(Controller.animationDoodlerCote_query)
         Controller.animationDoodlerCote_query = undefined
@@ -143,14 +153,17 @@ var Controller = {
 
     demarrerDeplacementDoodler : function(){
         var step = function(timestamp){
-            if(Model.doodler.droite)
-                Model.doodler.deplacerDroite(GAME_SETTINGS.vitesseDoodler)
-            else if(Model.doodler.gauche)
-                Model.doodler.deplacerGauche(GAME_SETTINGS.vitesseDoodler)
+            if(Model.doodlers.droite)
+                Model.getDoodlers().forEach(doodler => doodler.deplacerDroite(GAME_SETTINGS.vitesseDoodler))
+            else if(Model.doodlers.gauche)
+                Model.getDoodlers().forEach(doodler => doodler.deplacerGauche(GAME_SETTINGS.vitesseDoodler))
             else
                 window.cancelAnimationFrame(Controller.animationDoodlerCote_query)
+
+             // Réaffichage des entités
             View.clearFrame()
-            View.renderDoodler(Model.doodler)
+            Controller.refreshAll()
+
             Controller.animationDoodlerCote_query = window.requestAnimationFrame(step)
         }
 

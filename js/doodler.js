@@ -34,16 +34,10 @@ Entite.prototype.setHauteur = function(newHauteur){ this.hauteur = newHauteur }
 
 Entite.prototype.deplacerDroite = function(pixel){
     this.setX(this.getX() + pixel)
-
-    if(this.getX() > FRAME_SETTINGS.width - this.getLargeur())
-        this.setX(FRAME_SETTINGS.width - this.getLargeur())
 };
 
 Entite.prototype.deplacerGauche = function(pixel){
     this.setX(this.getX() - pixel)
-    
-    if(this.getX()<0)
-        this.setX(0)
 };
 
 Entite.prototype.deplacerHaut = function(pixel){
@@ -60,7 +54,15 @@ Entite.prototype.deplacerBas = function(pixel){
         this.setY(this.getHauteur())
 };
 
+Entite.prototype.existeCollisionFrameDroite = function(){
+    return this.getX() < FRAME_SETTINGS.width 
+        && this.getX() + this.getLargeur() > FRAME_SETTINGS.width
+};
 
+Entite.prototype.existeCollisionFrameGauche = function(){
+    return this.getX() < 0 
+        && this.getX() + this.getLargeur() > 0
+};
 
 /**
  * Classe héritant de Entite.
@@ -72,8 +74,13 @@ var Doodler = function(posX, posY){
     Entite.call(this, posX, posY, 60, 60)
 
     this.templateId = "doodler"
+
+    this.regardeADroite = false
 };
-Doodler.prototype.getTemplateId = function(){return this.templateId}
+
 Doodler.prototype = Object.create(Entite.prototype);
 Doodler.prototype.constructor = Doodler
 
+Doodler.prototype.getTemplateId = function(){return this.templateId}
+Doodler.prototype.regarderAGauche = function(){this.regardeADroite = false}
+Doodler.prototype.regarderADroite = function(){this.regardeADroite = true}
