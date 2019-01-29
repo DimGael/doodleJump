@@ -127,14 +127,14 @@ var Controller = {
         Model.doodler.gauche = true
         Model.doodler.flip = false
         Controller.demarrerDeplacementDoodler()
-        console.log(Model.doodler.getX())
+
     },
 
     demarrerDeplacementDroite : function(){
         Model.doodler.droite = true
         Model.doodler.flip = true
         Controller.demarrerDeplacementDoodler()
-        console.log(Model.doodler.getX())
+
     },
 
     stopDeplacementDoodler : function(){
@@ -190,8 +190,6 @@ var Controller = {
     faireSauterDoodler : function(){
         Model.doodler.setJump(true);
         Controller.demarrerAnimationSaut()
-        console.log(Model.doodler.getY());
-        console.log("SAUT !")
 
     }
 }
