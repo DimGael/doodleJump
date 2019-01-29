@@ -133,14 +133,14 @@ var Controller = {
         Model.doodlers.gauche = true
         Model.getDoodlers().forEach(doodler => doodler.regarderAGauche())
         Controller.demarrerDeplacementDoodler()
-        console.log(Model.doodler.getX())
+
     },
 
     demarrerDeplacementDroite : function(){
         Model.doodlers.droite = true
         Model.getDoodlers().forEach(doodler => doodler.regarderADroite())
         Controller.demarrerDeplacementDoodler()
-        console.log(Model.doodler.getX())
+
     },
 
     stopDeplacementDoodler : function(){
@@ -249,8 +249,6 @@ var Controller = {
     faireSauterDoodler : function(){
         Model.doodler.setJump(true);
         Controller.demarrerAnimationSaut()
-        console.log(Model.doodler.getY());
-        console.log("SAUT !")
 
     }
 }
