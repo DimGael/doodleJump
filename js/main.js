@@ -8,7 +8,8 @@ const FRAME_SETTINGS = {
 
 //Constantes des paramètres du jeu
 const GAME_SETTINGS = {
-    vitesseDoodler : 6
+    vitesseDoodler : 6,
+    vitesseSautDoodler : 8
 }
 
 window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
@@ -58,8 +59,9 @@ var View = {
 };
 
 var Controller = {
-     //Variable qui va gérer le déplacement sur le côté du doodler
+     //Variables qui va gérer le déplacement sur le côté du doodler
     animationDoodlerCote_query : null,
+    animationDoodlerSaut_query : null,
 
 
      //Raffraichis l'intégralité de la vue
@@ -131,12 +133,14 @@ var Controller = {
         Model.doodlers.gauche = true
         Model.getDoodlers().forEach(doodler => doodler.regarderAGauche())
         Controller.demarrerDeplacementDoodler()
+        console.log(Model.doodler.getX())
     },
 
     demarrerDeplacementDroite : function(){
         Model.doodlers.droite = true
         Model.getDoodlers().forEach(doodler => doodler.regarderADroite())
         Controller.demarrerDeplacementDoodler()
+        console.log(Model.doodler.getX())
     },
 
     stopDeplacementDoodler : function(){
@@ -178,6 +182,31 @@ var Controller = {
 
         Controller.animationDoodlerCote_query = window.requestAnimationFrame(step)
     },
+    demarrerAnimationSaut : function(){
+        var step = function(timestamp){
+            if(Model.doodler.getY()<Model.doodler.baseSaut+500 &&
+                Model.doodler.isJumping()){
+                Model.doodler.deplacerHaut(GAME_SETTINGS.vitesseSautDoodler)
+            }
+            else if(Model.doodler.getY()>=Model.doodler.baseSaut+100) {
+                Model.doodler.setJump(false);
+            }
+
+            if(!Model.doodler.isJumping()){
+                Model.doodler.deplacerBas(GAME_SETTINGS.vitesseSautDoodler)
+            }
+            if(Model.doodler.getY()===0){
+                //Arrete l'animation
+                window.cancelAnimationFrame(Controller.animationDoodlerSaut_query)
+                Controller.faireSauterDoodler();
+                return null
+            }
+            View.clearFrame()
+            View.renderDoodler(Model.doodler)
+            Controller.animationDoodlerSaut_query = window.requestAnimationFrame(step)
+            }
+            Controller.animationDoodlerSaut_query = window.requestAnimationFrame(step)
+        },
 
     onCollisionDoodlerDroite : function(){
         //S'il n'y a qu'un seul doodler dans la frame
@@ -218,8 +247,11 @@ var Controller = {
     },
 
     faireSauterDoodler : function(){
-        //TODO
+        Model.doodler.setJump(true);
+        Controller.demarrerAnimationSaut()
+        console.log(Model.doodler.getY());
         console.log("SAUT !")
+
     }
 }
 

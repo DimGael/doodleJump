@@ -50,8 +50,8 @@ Entite.prototype.deplacerHaut = function(pixel){
 Entite.prototype.deplacerBas = function(pixel){
     this.setY(this.getY() - pixel)
 
-    if(this.getY() < this.getHauteur())
-        this.setY(this.getHauteur())
+    if(this.getY() <= 0)
+        this.setY(0)
 };
 
 Entite.prototype.existeCollisionFrameDroite = function(){
@@ -88,13 +88,22 @@ var Doodler = function(posX, posY){
     Entite.call(this, posX, posY, 60, 60)
 
     this.templateId = "doodler"
+    this.baseSaut= 0; //coordonnée Y de la base de notre saut
+    this.jump = false;
 
-    this.regardeADroite = false
 };
 
 Doodler.prototype = Object.create(Entite.prototype);
 Doodler.prototype.constructor = Doodler
+Doodler.prototype = Object.create(Entite.prototype);
+Doodler.prototype.constructor = Doodler
 
 Doodler.prototype.getTemplateId = function(){return this.templateId}
+
 Doodler.prototype.regarderAGauche = function(){this.regardeADroite = false}
 Doodler.prototype.regarderADroite = function(){this.regardeADroite = true}
+
+Doodler.prototype.isJumping = function(){ return this.jump }
+Doodler.prototype.setJump = function(newState){ this.jump = newState }
+Doodler.prototype.getBaseSaut = function(){ return this.baseSaut }
+Doodler.prototype.setBaseSaut = function(newBaseSaut){ this.baseSaut = newBaseSaut }
