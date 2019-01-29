@@ -59,16 +59,30 @@ Entite.prototype.existeCollisionFrameDroite = function(){
         && this.getX() + this.getLargeur() > FRAME_SETTINGS.width
 };
 
+Entite.prototype.estSortiDeLaFrameDroite = function(){
+    return this.getX() > FRAME_SETTINGS.width
+};
+
 Entite.prototype.existeCollisionFrameGauche = function(){
     return this.getX() < 0 
         && this.getX() + this.getLargeur() > 0
 };
 
+Entite.prototype.estSortiDeLaFrameGauche = function(){
+    return this.getX() + this.getLargeur() < 0
+};
+
+
+Entite.prototype.estSortiFrame = function(){
+    return this.estSortiDeLaFrameDroite() ||
+        this.estSortiDeLaFrameGauche()
+}
+
 /**
  * Classe héritant de Entite.
  * Va définir le Doodler
- * @param {pixel} posX 
- * @param {pixel} posY 
+ * @param {float} posX en pixel
+ * @param {flaot} posY en pixel
  */
 var Doodler = function(posX, posY){
     Entite.call(this, posX, posY, 60, 60)

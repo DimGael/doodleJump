@@ -20,15 +20,11 @@ window.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAni
 var Model = {
      //Si deux doodlers sont présents, c'est qu'il traverse l'écran
     doodlers: [
-        new Doodler(Number(FRAME_SETTINGS.width/2), 0),
-        null
+        new Doodler(Number(FRAME_SETTINGS.width/2), 0)
     ],
 
     getDoodlers : function(){
-        if(!Model.doodlers[1])
-            return [Model.doodlers[0]]
-        else
-            return Model.doodlers
+        return Model.doodlers
     },
 }
 
@@ -69,7 +65,7 @@ var Controller = {
      //Raffraichis l'intégralité de la vue
     refreshAll : function(){
          //TODO ajouter les autres entités
-        Model.getDoodlers().forEach(doodler => View.renderDoodler(doodler))
+        Model.doodlers.forEach(doodler => View.renderDoodler(doodler))
     },
 
     init : function(){
@@ -160,6 +156,19 @@ var Controller = {
             else
                 window.cancelAnimationFrame(Controller.animationDoodlerCote_query)
 
+            Model.getDoodlers().forEach(doodler => {
+                if(doodler.existeCollisionFrameDroite())
+                    Controller.onCollisionDoodlerDroite()
+                else if(doodler.existeCollisionFrameGauche())
+                    Controller.onCollisionDoodlerGauche()
+            })
+
+            //Si un doodler est sorti de la frame, le supprime
+            Model.doodlers.forEach((doodler, index) => {
+                if(doodler.estSortiFrame())
+                    Model.doodlers.splice(index, 1)
+            })
+
              // Réaffichage des entités
             View.clearFrame()
             Controller.refreshAll()
@@ -168,6 +177,44 @@ var Controller = {
         }
 
         Controller.animationDoodlerCote_query = window.requestAnimationFrame(step)
+    },
+
+    onCollisionDoodlerDroite : function(){
+        //S'il n'y a qu'un seul doodler dans la frame
+        if(Model.doodlers.length == 1){
+            var firstDoodler = Model.getDoodlers()[0];
+
+            var newDoodler = new Doodler(
+                firstDoodler.getX() - FRAME_SETTINGS.width,
+                firstDoodler.getY()
+            )
+
+            if(firstDoodler.regardeADroite)
+                newDoodler.regarderADroite()
+            else
+                newDoodler.regarderAGauche()
+
+            Model.doodlers.push(newDoodler)
+        }
+    },
+
+    onCollisionDoodlerGauche : function(){
+        //S'il n'y a qu'un seul doodler dans la frame
+        if(Model.doodlers.length == 1){
+            var firstDoodler = Model.getDoodlers()[0];
+
+            var newDoodler = new Doodler(
+                firstDoodler.getX() + FRAME_SETTINGS.width,
+                firstDoodler.getY()
+            )
+
+            if(firstDoodler.regardeADroite)
+                newDoodler.regarderADroite()
+            else
+                newDoodler.regarderAGauche()
+
+            Model.doodlers.push(newDoodler)
+        }
     },
 
     faireSauterDoodler : function(){
