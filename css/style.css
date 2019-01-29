@@ -8,7 +8,8 @@ body{
 
 #frame{
     position:relative;
-    background-color:white;
+    background-image: url('../img/background.png');
+    background-attachment: fixed;
 
     width:400px;
     height:750px;
