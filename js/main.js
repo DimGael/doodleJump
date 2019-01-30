@@ -67,6 +67,7 @@ var Controller = {
      //Raffraichis l'intégralité de la vue
     refreshAll : function(){
          //TODO ajouter les autres entités
+         View.clearFrame();
         Model.doodlers.forEach(doodler => View.renderDoodler(doodler))
     },
 
@@ -174,7 +175,6 @@ var Controller = {
             })
 
              // Réaffichage des entités
-            View.clearFrame()
             Controller.refreshAll()
 
             Controller.animationDoodlerCote_query = window.requestAnimationFrame(step)
@@ -183,28 +183,40 @@ var Controller = {
         Controller.animationDoodlerCote_query = window.requestAnimationFrame(step)
     },
     demarrerAnimationSaut : function(){
+        var keepGoing = true
         var step = function(timestamp){
-            if(Model.doodler.getY()<Model.doodler.baseSaut+500 &&
-                Model.doodler.isJumping()){
-                Model.doodler.deplacerHaut(GAME_SETTINGS.vitesseSautDoodler)
-            }
-            else if(Model.doodler.getY()>=Model.doodler.baseSaut+100) {
-                Model.doodler.setJump(false);
-            }
+            Model.doodlers.forEach((doodler, index) => {
+                if(doodler.getY()<doodler.baseSaut+500 &&
+                    doodler.isJumping()){
+                    doodler.deplacerHaut(GAME_SETTINGS.vitesseSautDoodler)
+                }
+                else if(doodler.getY()>=doodler.baseSaut+100) {
+                    doodler.setJump(false);
+                }
+    
+                if(!doodler.isJumping()){
+                    doodler.deplacerBas(GAME_SETTINGS.vitesseSautDoodler)
+                }
+                if(doodler.getY()===0){
+                    //Arrete l'animation
+                    window.cancelAnimationFrame(Controller.animationDoodlerSaut_query)
+                    Controller.faireSauterDoodler();
+                    keepGoing = false
+                }
+                
+            })
 
-            if(!Model.doodler.isJumping()){
-                Model.doodler.deplacerBas(GAME_SETTINGS.vitesseSautDoodler)
-            }
-            if(Model.doodler.getY()===0){
-                //Arrete l'animation
+            Controller.refreshAll()
+
+            if(!keepGoing){
                 window.cancelAnimationFrame(Controller.animationDoodlerSaut_query)
-                Controller.faireSauterDoodler();
+                Controller.animationDoodlerSaut_query = null
                 return null
             }
-            View.clearFrame()
-            View.renderDoodler(Model.doodler)
-            Controller.animationDoodlerSaut_query = window.requestAnimationFrame(step)
+            else{
+                Controller.animationDoodlerSaut_query = window.requestAnimationFrame(step)
             }
+        }
             Controller.animationDoodlerSaut_query = window.requestAnimationFrame(step)
         },
 
@@ -247,7 +259,7 @@ var Controller = {
     },
 
     faireSauterDoodler : function(){
-        Model.doodler.setJump(true);
+        Model.doodlers.forEach(doodler => doodler.setJump(true));
         Controller.demarrerAnimationSaut()
 
     }
