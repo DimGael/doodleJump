@@ -103,6 +103,7 @@ Doodler.prototype.getTemplateId = function(){return this.templateId}
 Doodler.prototype.regarderAGauche = function(){this.regardeADroite = false}
 Doodler.prototype.regarderADroite = function(){this.regardeADroite = true}
 
+// isJumping est à vrai tant que le doodler se déplace vers le haut
 Doodler.prototype.isJumping = function(){ return this.jump }
 Doodler.prototype.setJump = function(newState){ this.jump = newState }
 Doodler.prototype.getBaseSaut = function(){ return this.baseSaut }

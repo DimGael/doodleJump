@@ -77,6 +77,9 @@ var Controller = {
 
          //Affichage de tous les éléments de la frame
         Controller.refreshAll()
+
+        //Démarre directement l'animation de saut du doodler
+        Controller.faireSauterDoodler()
     },
 
     initListeners : function(){
@@ -106,10 +109,6 @@ var Controller = {
                         Controller.demarrerDeplacementDroite()
                     }
                     //Sinon le doodler se déplace déjà vers la droite
-                    break;
-
-                case ' ':
-                    Controller.faireSauterDoodler()
                     break;
             }
         })
@@ -197,7 +196,7 @@ var Controller = {
                 if(!doodler.isJumping()){
                     doodler.deplacerBas(GAME_SETTINGS.vitesseSautDoodler)
                 }
-                if(doodler.getY()===0){
+                if(doodler.getY()===doodler.baseSaut){
                     //Arrete l'animation
                     window.cancelAnimationFrame(Controller.animationDoodlerSaut_query)
                     Controller.faireSauterDoodler();
@@ -230,10 +229,7 @@ var Controller = {
                 firstDoodler.getY()
             )
 
-            if(firstDoodler.regardeADroite)
-                newDoodler.regarderADroite()
-            else
-                newDoodler.regarderAGauche()
+            Controller.copierDonneesDoodler(firstDoodler, newDoodler)
 
             Model.doodlers.push(newDoodler)
         }
@@ -249,13 +245,25 @@ var Controller = {
                 firstDoodler.getY()
             )
 
-            if(firstDoodler.regardeADroite)
-                newDoodler.regarderADroite()
-            else
-                newDoodler.regarderAGauche()
+            Controller.copierDonneesDoodler(firstDoodler, newDoodler)
 
             Model.doodlers.push(newDoodler)
         }
+    },
+
+    copierDonneesDoodler: function(doodler, newDoodler){
+        if(doodler.regardeADroite){
+            //Le nouveau doodler apparaît à gauche
+            newDoodler.regarderADroite()
+        }
+        else{
+            //Le nouveau doodler apparaît à droite
+            newDoodler.regarderAGauche()
+        }
+
+        newDoodler.setJump(doodler.isJumping())
+
+        newDoodler.setBaseSaut(doodler.getBaseSaut())
     },
 
     faireSauterDoodler : function(){
