@@ -29,3 +29,8 @@ body{
     filter: FlipH;
     -ms-filter: "FlipH";
 }
+
+.plateforme{
+    background-color: green;
+    border:0.5px solid white;
+}

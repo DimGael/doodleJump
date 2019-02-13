@@ -8,9 +8,9 @@ const FRAME_SETTINGS = {
 
 //Constantes des paramètres du jeu
 const GAME_SETTINGS = {
-    vitesseDoodler : 6,
+    vitesseDoodler : 7,
     vitesseSautDoodler : 7,
-    hauteurSautDoodler : 350,
+    hauteurSautDoodler : 300,
 }
 
 window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
@@ -28,6 +28,8 @@ var Model = {
     getDoodlers : function(){
         return Model.doodlers
     },
+
+    plateformes : []
 }
 
 var View = {
@@ -54,6 +56,20 @@ var View = {
         View.frame.append(clone);
     },
 
+    renderEntity : function(entity){
+        var template = document.querySelector("#"+entity.templateId);
+
+        var clone = template.content.cloneNode(true).firstElementChild
+
+        clone.style.left = entity.getX()+"px";
+        clone.style.bottom = entity.getY()+"px";
+
+        clone.style.height = entity.getHauteur()+"px"
+        clone.style.width = entity.getLargeur()+"px"
+
+        View.frame.append(clone);
+    },
+
     clearFrame : function(){
         View.frame.innerHTML = ""
     }
@@ -70,17 +86,24 @@ var Controller = {
          //TODO ajouter les autres entités
          View.clearFrame();
         Model.doodlers.forEach(doodler => View.renderDoodler(doodler))
+        Model.plateformes.forEach((plateforme)=>View.renderEntity(plateforme))
     },
 
     init : function(){
          //Initialise les listeners du joueur
         Controller.initListeners()
 
-         //Affichage de tous les éléments de la frame
-        Controller.refreshAll()
-
+        //Création des plateformes
+        Model.plateformes.push(new Plateforme(50, 200, 'green'))
+        Model.plateformes.push(new Plateforme(100, 400, 'green'))
+        Model.plateformes.push(new Plateforme(300, 520, 'green'))
+        
         //Démarre directement l'animation de saut du doodler
         Controller.faireSauterDoodler()
+
+        //Affichage de tous les éléments de la frame
+        Controller.refreshAll()
+
     },
 
     initListeners : function(){
@@ -188,15 +211,29 @@ var Controller = {
             Model.doodlers.forEach((doodler, index) => {
                 if(doodler.getY()<doodler.baseSaut + GAME_SETTINGS.hauteurSautDoodler &&
                     doodler.isJumping()){
-                        
                     doodler.deplacerHaut(GAME_SETTINGS.vitesseSautDoodler)
                 }
                 else{
                     doodler.setJump(false);
+                    doodler.setBaseSaut(0);
                     doodler.deplacerBas(GAME_SETTINGS.vitesseSautDoodler)
                 }
+
+                // TODO - Si le doodler tombe et qu'il y a collision avec une plateforme, change sa base de saut
+                if(!doodler.isJumping()){
+                    Model.plateformes.forEach(plateforme => {
+                        if (Controller.detecterCollisionDoodlerPlateforme(doodler, plateforme)){
+                            Model.doodlers.forEach((myDoodler) =>{
+                                myDoodler.setBaseSaut(plateforme.getY())
+                                myDoodler.setJump(true)  
+                            })
+                        }
+                    })
+                }
+
+                
     
-                if(doodler.getY()===doodler.baseSaut){
+                if(doodler.getY() <= doodler.baseSaut){
                     //Recommence à sauter
                     doodler.setJump(true)
                 }
@@ -209,6 +246,22 @@ var Controller = {
         };
 
         Controller.animationDoodlerSaut_query = window.requestAnimationFrame(step)
+    },
+
+    detecterCollisionDoodlerPlateforme: function(doodler, plateforme){
+        //Tester si les pieds du doodler sont
+        let result = false;
+
+        if(doodler.getY() >= plateforme.getY() && doodler.getY() <= plateforme.getY()+plateforme.getHauteur()){
+
+            if ((doodler.getX()-10 >= plateforme.getX() && doodler.getX()-10 <= plateforme.getX()+plateforme.getLargeur())
+                || (doodler.getX()+doodler.getLargeur() >= plateforme.getX() && doodler.getX()+doodler.getLargeur() <= plateforme.getX()+plateforme.getLargeur())){
+
+                    result = true;
+            }
+        }
+
+        return result;
     },
 
     onCollisionDoodlerDroite : function(){

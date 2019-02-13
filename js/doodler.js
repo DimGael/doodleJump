@@ -95,8 +95,6 @@ var Doodler = function(posX, posY){
 
 Doodler.prototype = Object.create(Entite.prototype);
 Doodler.prototype.constructor = Doodler
-Doodler.prototype = Object.create(Entite.prototype);
-Doodler.prototype.constructor = Doodler
 
 Doodler.prototype.getTemplateId = function(){return this.templateId}
 
@@ -108,3 +106,13 @@ Doodler.prototype.isJumping = function(){ return this.jump }
 Doodler.prototype.setJump = function(newState){ this.jump = newState }
 Doodler.prototype.getBaseSaut = function(){ return this.baseSaut }
 Doodler.prototype.setBaseSaut = function(newBaseSaut){ this.baseSaut = newBaseSaut }
+
+
+var Plateforme = function(posX, posY, couleur){
+    Entite.call(this, posX, posY, 80, 10)
+
+    this.templateId = "plateforme"
+    this.couleur = couleur
+}
+Plateforme.prototype = Object.create(Entite.prototype);
+Plateforme.prototype.constructor = Plateforme
