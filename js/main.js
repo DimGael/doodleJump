@@ -38,26 +38,28 @@ var View = {
 
      // Raffraichis l'affichage du doodler
     renderDoodler : function(doodler){
-        var template = document.querySelector("#doodler");
+        var clone = View.createEntity(doodler)
 
-        var clone = template.content.cloneNode(true).firstElementChild
-        
-        if(doodler.regardeADroite)
-            clone.classList.add("flip")
-        else
-            clone.classList.remove("flip")
-
-        clone.style.left = doodler.getX()+"px";
-        clone.style.bottom = doodler.getY()+"px";
-
-        clone.style.height = doodler.getHauteur()+"px"
-        clone.style.width = doodler.getLargeur()+"px"
-
-        View.frame.append(clone);
+        if(clone){
+            if(doodler.regardeADroite)
+                clone.classList.add("flip")
+            else
+                clone.classList.remove("flip")
+    
+            View.frame.append(clone);
+        }
     },
 
     renderEntity : function(entity){
-        var template = document.querySelector("#"+entity.templateId);
+        if(entity)
+            View.frame.append(View.createEntity(entity));
+    },
+
+    createEntity: function(entity){
+        if (entity.getY() > FRAME_SETTINGS.height || entity.getY() < 0)
+            return null
+
+        var template = document.querySelector("#"+entity.getTemplateId());
 
         var clone = template.content.cloneNode(true).firstElementChild
 
@@ -67,7 +69,7 @@ var View = {
         clone.style.height = entity.getHauteur()+"px"
         clone.style.width = entity.getLargeur()+"px"
 
-        View.frame.append(clone);
+        return clone;
     },
 
     clearFrame : function(){
