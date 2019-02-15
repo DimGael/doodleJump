@@ -9,7 +9,7 @@ const FRAME_SETTINGS = {
 //Constantes des paramètres du jeu
 const GAME_SETTINGS = {
     vitesseDoodler : 7,
-    vitesseSautDoodler : 7,
+    vitesseSautDoodler : 6,
     hauteurSautDoodler : 300,
     hauteurCamera : 400,
     vitesseCamera : 10,
@@ -32,26 +32,18 @@ var Model = {
         return Model.doodlers
     },
 
-    plateformes : []
+    plateformes : [],
+
+    getAllEntities : function(){
+        //Rajouter les autres entités si besoin
+        return Model.doodlers
+            .concat(Model.plateformes)
+    },
 }
 
 var View = {
      // Récupère la frame dans laquelle les éléments sont ajoutés
     frame : document.getElementById("frame"),
-
-     // Raffraichis l'affichage du doodler
-    renderDoodler : function(doodler){
-        var clone = View.createEntity(doodler)
-
-        if(clone){
-            if(doodler.regardeADroite)
-                clone.classList.add("flip")
-            else
-                clone.classList.remove("flip")
-    
-            View.frame.append(clone);
-        }
-    },
 
     renderEntity : function(entity){
         if(entity)
@@ -72,6 +64,17 @@ var View = {
         clone.style.height = entity.getHauteur()+"px"
         clone.style.width = entity.getLargeur()+"px"
 
+        //Traitement spéciaux en fonction du type d'entité
+        if (entity instanceof Plateforme){
+            clone.style.backgroundColor = entity.couleur
+        }
+        else if (entity instanceof Doodler){
+            if(entity.regardeADroite)
+                clone.classList.add("flip")
+            else
+                clone.classList.remove("flip")
+        }
+
         return clone;
     },
 
@@ -89,10 +92,8 @@ var Controller = {
 
      //Raffraichis l'intégralité de la vue
     refreshAll : function(){
-         //TODO ajouter les autres entités
-         View.clearFrame();
-        Model.doodlers.forEach(doodler => View.renderDoodler(doodler))
-        Model.plateformes.forEach((plateforme)=>View.renderEntity(plateforme))
+        View.clearFrame();
+        Model.getAllEntities().forEach(entity => View.renderEntity(entity))
     },
 
     init : function(){
@@ -100,7 +101,7 @@ var Controller = {
         Controller.initListeners()
 
         //Création des plateformes
-        Model.plateformes.push(new Plateforme(50, 200, 'green'))
+        Model.plateformes.push(new Plateforme(50, 200, 'blue'))
         Model.plateformes.push(new Plateforme(100, 400, 'green'))
         Model.plateformes.push(new Plateforme(300, 520, 'green'))
         
