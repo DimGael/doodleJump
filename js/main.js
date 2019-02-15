@@ -12,6 +12,8 @@ const GAME_SETTINGS = {
     vitesseSautDoodler : 7,
     hauteurSautDoodler : 300,
     hauteurCamera : 400,
+    vitesseCamera : 10,
+    doodlerPeutTomber : false,
 }
 
 window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
@@ -82,6 +84,7 @@ var Controller = {
      //Variables qui va gérer le déplacement sur le côté du doodler
     animationDoodlerCote_query : null,
     animationDoodlerSaut_query : null,
+    animationCamera_query : null,
 
 
      //Raffraichis l'intégralité de la vue
@@ -208,17 +211,18 @@ var Controller = {
 
         Controller.animationDoodlerCote_query = window.requestAnimationFrame(step)
     },
+
     demarrerAnimationSaut : function(){
 
         var step = function(timestamp){
             Model.doodlers.forEach((doodler, index) => {
-                if(doodler.getY()<doodler.baseSaut + GAME_SETTINGS.hauteurSautDoodler &&
+
+                if (doodler.getY()<doodler.baseSaut + GAME_SETTINGS.hauteurSautDoodler &&
                     doodler.isJumping()){
                     doodler.deplacerHaut(GAME_SETTINGS.vitesseSautDoodler)
                 }
                 else{
                     doodler.setJump(false);
-                    doodler.setBaseSaut(0);
                     doodler.deplacerBas(GAME_SETTINGS.vitesseSautDoodler)
                 }
 
@@ -234,21 +238,23 @@ var Controller = {
                     })
                 }
 
-                if (doodler.getY() >= GAME_SETTINGS.hauteurCamera){
-                    Model.plateformes.forEach((plateforme, indexPlateforme) => {
-                        plateforme.deplacerBas(GAME_SETTINGS.vitesseSautDoodler);
-                        if (plateforme.getY() < 0){
-                            Model.plateformes.splice(indexPlateforme, 1)
-                        }
-                    });
+                //Si le doodler dépasse une certaine hauteur, la camera descend
+                if (doodler.getBaseSaut() + GAME_SETTINGS.hauteurSautDoodler >= GAME_SETTINGS.hauteurCamera){
+                    GAME_SETTINGS.doodlerPeutTomber = true;
+                    Controller.demarrerAnimationCamera();
                 }
                 
     
-                if(doodler.getY() <= doodler.baseSaut){
-                    //Recommence à sauter
-                    doodler.setJump(true)
+                if(doodler.getY() <= doodler.baseSaut ){
+                    if (!GAME_SETTINGS.doodlerPeutTomber){
+                        //Recommence à sauter
+                        doodler.setJump(true)
+                    }
+                    else{
+                        window.cancelAnimationFrame(Controller.animationDoodlerSaut_query);
+                        Controller.animationCamera_query = null;
+                    }
                 }
-                
             })
 
             Controller.refreshAll()
@@ -256,7 +262,47 @@ var Controller = {
             Controller.animationDoodlerSaut_query = window.requestAnimationFrame(step)   
         };
 
-        Controller.animationDoodlerSaut_query = window.requestAnimationFrame(step)
+        if (Controller.animationDoodlerSaut_query !== undefined)
+            Controller.animationDoodlerSaut_query = window.requestAnimationFrame(step)
+    },
+
+    /**
+     * Méthode qui va faire descendre les plateformes et les entités si le doodler est trop haut
+     */
+    demarrerAnimationCamera : function(){
+        //La vitesse du doodler est ralentie tant que la caméra bouge
+        var tempVitesseSautDoodler = GAME_SETTINGS.vitesseSautDoodler
+
+        if (!Controller.animationCamera_query){            
+            var step = function(timestamp){
+                var doodlerData = Model.getDoodlers()[0];
+
+                //Il faut que les plateformes descendent ainsi que le doodler jusqu'à ce que la base saut du doodler soit à 50
+                if (doodlerData.getBaseSaut() !== 0 && doodlerData.getBaseSaut() > 50){
+                    GAME_SETTINGS.vitesseSautDoodler = tempVitesseSautDoodler - 5 
+
+                    Model.plateformes.forEach((plateforme, indexPlateforme) => {
+                        plateforme.deplacerBas(GAME_SETTINGS.vitesseCamera)
+                        if (plateforme.getY() <= 0)
+                            Model.plateformes.splice(indexPlateforme, 1)
+                    })
+
+                    Model.doodlers.forEach(doodler =>{
+                        doodler.setBaseSaut(doodlerData.getBaseSaut() - GAME_SETTINGS.vitesseCamera)
+                    })
+
+                    Controller.animationCamera_query = window.requestAnimationFrame(step);
+                }
+                else{
+                    window.cancelAnimationFrame(Controller.animationCamera_query);
+                    Controller.animationCamera_query = null;
+                    GAME_SETTINGS.vitesseSautDoodler = tempVitesseSautDoodler
+                }
+                    
+            }
+
+            Controller.animationCamera_query = window.requestAnimationFrame(step);
+        }
     },
 
     detecterCollisionDoodlerPlateforme: function(doodler, plateforme){
