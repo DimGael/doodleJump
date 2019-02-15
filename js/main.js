@@ -32,6 +32,7 @@ var Model = {
     },
 
     plateformes : [],
+    dernierePlateforme : undefined,
 
     getAllEntities : function(){
         //Rajouter les autres entités si besoin
@@ -45,8 +46,11 @@ var View = {
     frame : document.getElementById("frame"),
 
     renderEntity : function(entity){
-        if(entity)
-            View.frame.append(View.createEntity(entity));
+        if(entity){
+            var node = View.createEntity(entity)
+            if (node)
+                View.frame.append(node);
+        }
     },
 
     createEntity: function(entity){
@@ -100,10 +104,8 @@ var Controller = {
         Controller.initListeners()
 
         //Création des plateformes
-        Model.plateformes.push(new Plateforme(50, 200, 'blue'))
-        Model.plateformes.push(new Plateforme(100, 400, 'green'))
-        Model.plateformes.push(new Plateforme(300, 520, 'green'))
-        
+
+        Controller.genererNouvellePlateforme();
         //Démarre directement l'animation de saut du doodler
         Controller.faireSauterDoodler()
 
@@ -287,6 +289,11 @@ var Controller = {
                             Model.plateformes.splice(indexPlateforme, 1)
                     })
 
+                    //Test si la plus haute plateforme est affichée à l'écran, si oui
+                    if(Model.dernierePlateforme.getY()<=FRAME_SETTINGS.height){
+                        Controller.genererNouvellePlateforme();
+                    }
+
                     Model.doodlers.forEach(doodler =>{
                         doodler.setBaseSaut(doodlerData.getBaseSaut() - GAME_SETTINGS.vitesseCamera)
                     })
@@ -372,7 +379,26 @@ var Controller = {
         Model.doodlers.forEach(doodler => doodler.setJump(true));
         Controller.demarrerAnimationSaut()
 
+    },
+    genererNouvellePlateforme: function(){
+        i=0;
+        while(i<10){
+            if(Model.dernierePlateforme==undefined){
+                Model.dernierePlateforme=new Plateforme(50, 0, 'blue');
+                Model.plateformes.push(Model.dernierePlateforme);
+
+            }
+            else{
+                Model.dernierePlateforme=new Plateforme(Math.random()*(FRAME_SETTINGS.width-80), Model.dernierePlateforme.getY()+Math.random() * GAME_SETTINGS.hauteurSautDoodler-20,'green');
+                Model.plateformes.push(Model.dernierePlateforme);
+            }
+            i++;
+        }
+
+
+
     }
+
 }
 
 Controller.init();
