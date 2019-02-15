@@ -1,10 +1,9 @@
-/**
- * Déclarée dans doodler.js
+/** Constantes */
 const FRAME_SETTINGS = {
     width:400,
     height:750
 }
-*/
+
 
 //Constantes des paramètres du jeu
 const GAME_SETTINGS = {
