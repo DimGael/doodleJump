@@ -49,9 +49,6 @@ Entite.prototype.deplacerHaut = function(pixel){
 
 Entite.prototype.deplacerBas = function(pixel){
     this.setY(this.getY() - pixel)
-
-    if(this.getY() <= 0)
-        this.setY(0)
 };
 
 Entite.prototype.existeCollisionFrameDroite = function(){

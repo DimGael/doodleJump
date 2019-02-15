@@ -11,6 +11,7 @@ const GAME_SETTINGS = {
     vitesseDoodler : 7,
     vitesseSautDoodler : 7,
     hauteurSautDoodler : 300,
+    hauteurCamera : 400,
 }
 
 window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
@@ -227,12 +228,20 @@ var Controller = {
                         if (Controller.detecterCollisionDoodlerPlateforme(doodler, plateforme)){
                             Model.doodlers.forEach((myDoodler) =>{
                                 myDoodler.setBaseSaut(plateforme.getY())
-                                myDoodler.setJump(true)  
+                                myDoodler.setJump(true)
                             })
                         }
                     })
                 }
 
+                if (doodler.getY() >= GAME_SETTINGS.hauteurCamera){
+                    Model.plateformes.forEach((plateforme, indexPlateforme) => {
+                        plateforme.deplacerBas(GAME_SETTINGS.vitesseSautDoodler);
+                        if (plateforme.getY() < 0){
+                            Model.plateformes.splice(indexPlateforme, 1)
+                        }
+                    });
+                }
                 
     
                 if(doodler.getY() <= doodler.baseSaut){
