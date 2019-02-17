@@ -116,8 +116,8 @@ var Controller = {
         Controller.initListeners()
 
         //Création des plateformes
+        Controller.genererNouvellesPlateformesStandard(5);
 
-        Controller.genererNouvellePlateforme();
         //Démarre directement l'animation de saut du doodler
         Controller.faireSauterDoodler()
 
@@ -240,7 +240,6 @@ var Controller = {
                     doodler.deplacerBas(GAME_SETTINGS.vitesseSautDoodler)
                 }
 
-                // TODO - Si le doodler tombe et qu'il y a collision avec une plateforme, change sa base de saut
                 if(!doodler.isJumping()){
                     Model.plateformes.forEach(plateforme => {
                         if (Controller.detecterCollisionDoodlerPlateforme(doodler, plateforme)){
@@ -305,7 +304,7 @@ var Controller = {
 
                     //Test si la plus haute plateforme est affichée à l'écran, si oui
                     if(Model.dernierePlateforme.getY()<=FRAME_SETTINGS.height){
-                        Controller.genererNouvellePlateforme();
+                        Controller.genererNouvellesPlateformesStandard(5);
                     }
 
                     Model.doodlers.forEach(doodler =>{
@@ -394,22 +393,27 @@ var Controller = {
         Controller.demarrerAnimationSaut()
 
     },
-    genererNouvellePlateforme: function(){
-        i=0;
-        while(i<5){
-            if(Model.dernierePlateforme==undefined){
-                Model.dernierePlateforme=new Plateforme(50, 0, 'blue');
-                Model.plateformes.push(Model.dernierePlateforme);
+    
+    genererNouvellesPlateformesStandard: function(nbPlateformes){
 
-            }
-            else{
-                Model.dernierePlateforme=new Plateforme(Math.random()*(FRAME_SETTINGS.width-80), Model.dernierePlateforme.getY()+Math.random() * GAME_SETTINGS.hauteurSautDoodler-20,'green');
+        for(let i = 0; i<nbPlateformes; i++){
+            if (Model.dernierePlateforme){
+                Model.dernierePlateforme = new PlateformeStandard(
+                    Math.random()*(FRAME_SETTINGS.width-80),
+                    Model.dernierePlateforme.getY() + Math.random()*GAME_SETTINGS.hauteurSautDoodler-20
+                );
+
                 Model.plateformes.push(Model.dernierePlateforme);
             }
-            i++;
+            else {
+                Model.dernierePlateforme = new PlateformeStandard(
+                    Math.random()*(FRAME_SETTINGS.width-80),
+                    Math.random()*GAME_SETTINGS.hauteurSautDoodler-20
+                );
+
+                Model.plateformes.push(Model.dernierePlateforme);
+            }
         }
-
-
 
     }
 
