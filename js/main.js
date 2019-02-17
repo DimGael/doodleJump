@@ -137,6 +137,32 @@ var Controller = {
 
     },
 
+    perdu : function(){
+        if (Controller.animationDoodlerCote_query){
+            window.cancelAnimationFrame(Controller.animationDoodlerCote_query)
+        }
+        
+        if (Controller.animationDoodlerSaut_query){
+            window.cancelAnimationFrame(Controller.animationDoodlerSaut_query)
+        }
+
+        if (Controller.animationCamera_query){
+            window.cancelAnimationFrame(Controller.animationCamera_query)
+        }
+
+        if (Controller.animationPlateforme_query){
+            window.cancelAnimationFrame(Controller.animationPlateforme_query)
+        }
+
+        Model.plateformes = []
+
+        Model.doodlers = []
+
+        View.clearFrame()
+
+        alert("Perdu ! Voici votre score : " + Controller.score)
+    },
+
     initListeners : function(){
         document.addEventListener('keydown', (event) => {
             switch (event.key) {
@@ -302,8 +328,7 @@ var Controller = {
                         doodler.setJump(true)
                     }
                     else{
-                        window.cancelAnimationFrame(Controller.animationDoodlerSaut_query);
-                        Controller.animationCamera_query = null;
+                        Controller.perdu()
                     }
                 }
             })
