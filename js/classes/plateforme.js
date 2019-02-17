@@ -16,15 +16,14 @@ PlateformeStandard.prototype.constructor = PlateformeStandard;
 
 
 var PlateformePiege = function(posX, posY){
-    Plateforme.call(this.posX, posY, 'brown')
+    Plateforme.call(this, posX, posY, 'sienna')
 }
 PlateformePiege.prototype = Object.create(Plateforme.prototype);
 PlateformePiege.prototype.constructor = PlateformePiege;
 
 
-
 var PlateformeMouvante = function(posX, posY, vitesse, longueurDeplacement){
-    Plateforme.call(this.posX, posY, 'brown')
+    Plateforme.call(this.posX, posY, 'sienna')
     this.vitesse = vitesse
     this.longueurDeplacement = longueurDeplacement
 }

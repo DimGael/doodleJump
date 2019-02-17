@@ -116,7 +116,8 @@ var Controller = {
         Controller.initListeners()
 
         //Création des plateformes
-        Controller.genererNouvellesPlateformesStandard(5);
+        Controller.genererNouvellesPlateformesStandard(25);
+        Controller.genererNouvellesPlateformesPiegees(3);
 
         //Démarre directement l'animation de saut du doodler
         Controller.faireSauterDoodler()
@@ -241,12 +242,16 @@ var Controller = {
                 }
 
                 if(!doodler.isJumping()){
-                    Model.plateformes.forEach(plateforme => {
+                    Model.plateformes.forEach((plateforme, indexPlateforme) => {
                         if (Controller.detecterCollisionDoodlerPlateforme(doodler, plateforme)){
-                            Model.doodlers.forEach((myDoodler) =>{
-                                myDoodler.setBaseSaut(plateforme.getY())
-                                myDoodler.setJump(true)
-                            })
+                            if (plateforme instanceof PlateformePiege){
+                                Model.plateformes.splice(indexPlateforme, 1);
+                            }else {
+                                Model.doodlers.forEach((myDoodler) => {
+                                    myDoodler.setBaseSaut(plateforme.getY())
+                                    myDoodler.setJump(true)
+                                })
+                            }
                         }
                     })
                 }
@@ -303,8 +308,12 @@ var Controller = {
                     })
 
                     //Test si la plus haute plateforme est affichée à l'écran, si oui
-                    if(Model.dernierePlateforme.getY()<=FRAME_SETTINGS.height){
+                    if (Model.dernierePlateforme.getY() <= FRAME_SETTINGS.height){
                         Controller.genererNouvellesPlateformesStandard(5);
+                        while(Model.dernierePlateforme.getY() < FRAME_SETTINGS.height)
+                            Controller.genererNouvellesPlateformesStandard(5);
+
+                        Controller.genererNouvellesPlateformesPiegees(5);
                     }
 
                     Model.doodlers.forEach(doodler =>{
@@ -413,7 +422,17 @@ var Controller = {
                 Model.plateformes.push(Model.dernierePlateforme);
             }
         }
+    },
 
+    genererNouvellesPlateformesPiegees: function(nbPlateformes){
+        for(let i = 0; i<nbPlateformes; i++){
+
+            Model.plateformes.push(new PlateformePiege(
+                Math.random()*(FRAME_SETTINGS.width-80),
+                Math.random()*FRAME_SETTINGS.height + FRAME_SETTINGS.height
+            ));
+
+        }
     }
 
 }
