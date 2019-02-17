@@ -410,7 +410,6 @@ var Controller = {
                     Math.random()*(FRAME_SETTINGS.width-80),
                     Math.random()*GAME_SETTINGS.hauteurSautDoodler-20
                 );
-
                 Model.plateformes.push(Model.dernierePlateforme);
             }
         }
