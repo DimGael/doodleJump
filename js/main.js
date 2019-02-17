@@ -322,13 +322,12 @@ var Controller = {
                 }
                 
     
-                if(doodler.getY() <= doodler.baseSaut ){
-                    if (!GAME_SETTINGS.doodlerPeutTomber){
-                        //Recommence à sauter
-                        doodler.setJump(true)
+                if (doodler.getY() <= 0){
+                    if(GAME_SETTINGS.doodlerPeutTomber){
+                        Controller.perdu()
                     }
                     else{
-                        Controller.perdu()
+                        doodler.setJump(true)
                     }
                 }
             })
