@@ -1,6 +1,6 @@
 /** Constantes */
 const FRAME_SETTINGS = {
-    width:400,
+    width:500,
     height:750
 }
 
@@ -13,6 +13,12 @@ const GAME_SETTINGS = {
     hauteurCamera : 400,
     vitesseCamera : 10,
     doodlerPeutTomber : false,
+
+    vitesseMaxPlateformeMouvante : 5,
+    vitesseMinPlateformeMouvante : 1,
+
+    longueurDeplacementMaxPlateformeMouvante: 200,
+    longueurDeplacementMinPlateformeMouvante : 50
 }
 
 window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
@@ -100,6 +106,7 @@ var Controller = {
     animationDoodlerCote_query : null,
     animationDoodlerSaut_query : null,
     animationCamera_query : null,
+    animationPlateforme_query:null,
 
     score : 0,
 
@@ -118,9 +125,12 @@ var Controller = {
         //Création des plateformes
         Controller.genererNouvellesPlateformesStandard(25);
         Controller.genererNouvellesPlateformesPiegees(3);
+        Controller.genererNouvellesPlateformesMouvantes(5);
 
         //Démarre directement l'animation de saut du doodler
         Controller.faireSauterDoodler()
+
+        Controller.demarrerAnimationPlateformeMouvante()
 
         //Affichage de tous les éléments de la frame
         Controller.refreshAll()
@@ -194,6 +204,29 @@ var Controller = {
 
         window.cancelAnimationFrame(Controller.animationDoodlerCote_query)
         Controller.animationDoodlerCote_query = undefined
+    },
+
+    demarrerAnimationPlateformeMouvante : function(){
+        var step = function(timestamp){
+            Model.plateformes.forEach((plateforme) => {
+                if(plateforme instanceof PlateformeMouvante){
+                    if(plateforme.vaADroite()){
+                        plateforme.deplacerDroite(plateforme.getVitesse())
+                        if (plateforme.getX() >= plateforme.getBaseX() + plateforme.getLongueurDeplacement())
+                            plateforme.changeDeSens()
+                    }
+                    else{
+                        plateforme.deplacerGauche(plateforme.getVitesse())
+                        if (plateforme.getX() <= plateforme.getBaseX())
+                            plateforme.changeDeSens()
+                    }
+                }
+            })
+
+            Controller.animationPlateforme_query = window.requestAnimationFrame(step)
+        }
+
+        Controller.animationPlateforme_query = window.requestAnimationFrame(step)
     },
 
     demarrerDeplacementDoodler : function(){
@@ -314,6 +347,8 @@ var Controller = {
                             Controller.genererNouvellesPlateformesStandard(5);
 
                         Controller.genererNouvellesPlateformesPiegees(5);
+                        Controller.genererNouvellesPlateformesMouvantes(3);
+                        console.log("regénération")
                     }
 
                     Model.doodlers.forEach(doodler =>{
@@ -433,7 +468,26 @@ var Controller = {
             ));
 
         }
-    }
+    },
+
+    genererNouvellesPlateformesMouvantes: function (nbPlateformes) {
+        for(let i = 0; i<nbPlateformes; i++){
+
+            let vitesseAlea = GAME_SETTINGS.vitesseMaxPlateformeMouvante - GAME_SETTINGS.vitesseMinPlateformeMouvante
+            vitesseAlea = GAME_SETTINGS.vitesseMinPlateformeMouvante + Math.random()*vitesseAlea
+
+            let longueurDeplacementAlea = GAME_SETTINGS.longueurDeplacementMaxPlateformeMouvante - GAME_SETTINGS.longueurDeplacementMinPlateformeMouvante
+            longueurDeplacementAlea = GAME_SETTINGS.longueurDeplacementMinPlateformeMouvante + Math.random()*longueurDeplacementAlea
+
+            Model.plateformes.push(new PlateformeMouvante(
+                Math.random()*(FRAME_SETTINGS.width-80),
+                Math.random()*FRAME_SETTINGS.height + FRAME_SETTINGS.height,
+                vitesseAlea,
+                longueurDeplacementAlea
+            ));
+
+        }
+    },
 
 }
 
