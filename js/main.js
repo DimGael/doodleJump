@@ -44,6 +44,15 @@ var Model = {
 var View = {
      // Récupère la frame dans laquelle les éléments sont ajoutés
     frame : document.getElementById("frame"),
+    renderScore : function(score){
+        var template = document.querySelector("#score");
+
+        var clone = template.content.cloneNode(true).firstElementChild
+        clone.innerText=score;
+
+        View.frame.append(clone);
+
+    },
 
     renderEntity : function(entity){
         if(entity){
@@ -92,10 +101,13 @@ var Controller = {
     animationDoodlerSaut_query : null,
     animationCamera_query : null,
 
+    score : 0,
+
 
      //Raffraichis l'intégralité de la vue
     refreshAll : function(){
         View.clearFrame();
+        View.renderScore(Controller.score)
         Model.getAllEntities().forEach(entity => View.renderEntity(entity))
     },
 
@@ -272,6 +284,7 @@ var Controller = {
      * Méthode qui va faire descendre les plateformes et les entités si le doodler est trop haut
      */
     demarrerAnimationCamera : function(){
+        Controller.score=Controller.score+20;
         //La vitesse du doodler est ralentie tant que la caméra bouge
         var tempVitesseSautDoodler = GAME_SETTINGS.vitesseSautDoodler
 
@@ -287,6 +300,7 @@ var Controller = {
                         plateforme.deplacerBas(GAME_SETTINGS.vitesseCamera)
                         if (plateforme.getY() <= 0)
                             Model.plateformes.splice(indexPlateforme, 1)
+
                     })
 
                     //Test si la plus haute plateforme est affichée à l'écran, si oui
@@ -382,7 +396,7 @@ var Controller = {
     },
     genererNouvellePlateforme: function(){
         i=0;
-        while(i<10){
+        while(i<5){
             if(Model.dernierePlateforme==undefined){
                 Model.dernierePlateforme=new Plateforme(50, 0, 'blue');
                 Model.plateformes.push(Model.dernierePlateforme);

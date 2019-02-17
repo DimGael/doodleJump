@@ -33,3 +33,9 @@ body{
 .plateforme{
     background-color: green;
 }
+
+.score{
+    top : 50px;
+    left: 50px;
+    front-family: Verdana;
+}
