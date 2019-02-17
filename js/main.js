@@ -32,7 +32,9 @@ var Model = {
     },
 
     plateformes : [],
+    monstres : [],
     dernierePlateforme : undefined,
+    dernierMonstre: undefined,
 
     getAllEntities : function(){
         //Rajouter les autres entités si besoin
@@ -118,6 +120,8 @@ var Controller = {
         //Création des plateformes
 
         Controller.genererNouvellePlateforme();
+        //Generation des monstres
+        Controller.genererNouveauMonstre();
         //Démarre directement l'animation de saut du doodler
         Controller.faireSauterDoodler()
 
@@ -411,7 +415,28 @@ var Controller = {
 
 
 
+    },
+    genererNouveauMonstre: function(){
+        i=0;
+        while(i<3){
+            if(Model.dernierMonstre==undefined){
+                console.log("ça créer");
+                Model.dernierMonstre=new Monstre(50, 0);
+                Model.monstres.push(Model.dernierMonstre);
+
+            }
+            else{
+                console.log("ça créer bcp");
+                Model.dernierMonstre=new Monstre(Math.random()*(FRAME_SETTINGS.width-80), Model.dernierMonstre.getY()+Math.random() * GAME_SETTINGS.hauteurSautDoodler-20);
+                Model.monstres.push(Model.dernierMonstre);
+            }
+            i++;
+        }
+
+
+
     }
+
 
 }
 
